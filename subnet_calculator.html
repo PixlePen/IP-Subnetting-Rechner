@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP-Subnetting-Rechner - Nolden.tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css"> <style>
+        /* Spezifische Styles für den Subnetting-Rechner */
+        .calculator-container {
+            background-color: #2c3038;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-width: 800px;
+            margin: 30px auto;
+            color: #e6e6e6;
+        }
+
+        .calculator-container h2 {
+            color: #61dafb;
+            border-bottom: 2px solid #61dafb;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Abstand zwischen Label und Input */
+        }
+
+        .input-group label {
+            flex-basis: 150px; /* Feste Breite für Labels */
+            min-width: 100px;
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .input-group input[type="text"] {
+            flex-grow: 1; /* Input füllt restlichen Platz */
+            padding: 12px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #3e444b;
+            color: #e6e6e6;
+            font-size: 1.1em;
+            outline: none;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .input-group input[type="text"]:focus {
+            border-color: #61dafb;
+            box-shadow: 0 0 8px rgba(97, 218, 251, 0.7);
+        }
+
+        .calc-button {
+            background-color: #4CAF50; /* Grüne Akzentfarbe */
+            color: #1e2126;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .calc-button:hover {
+            background-color: #61dafb;
+            transform: translateY(-2px);
+        }
+
+        .results-section {
+            margin-top: 40px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+        }
+
+        .results-section h3 {
+            color: #FFD700; /* Gold für Ergebnis-Überschrift */
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-item {
+            display: flex;
+            margin-bottom: 15px;
+            background-color: #3e444b;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2);
+            align-items: center;
+        }
+
+        .result-item strong {
+            flex-basis: 180px; /* Feste Breite für Ergebnis-Labels */
+            min-width: 120px;
+            color: #61dafb; /* Akzentfarbe für Ergebnis-Label */
+            font-size: 1.1em;
+        }
+
+        .result-item span {
+            flex-grow: 1;
+            color: #e6e6e6;
+            font-family: 'Roboto Mono', monospace; /* Monospace für IP-Adressen */
+            font-size: 1.1em;
+            word-break: break-all; /* Lange Strings umbrechen */
+        }
+
+        .error-message {
+            color: #dc3545; /* Rot für Fehlermeldungen */
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .ip-version-selection {
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: bold;
+            color: #ccc;
+        }
+        .ip-version-selection input[type="radio"] {
+            margin-right: 5px;
+        }
+        .ip-version-selection label {
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        /* Responsivität */
+        @media (max-width: 600px) {
+            .calculator-container {
+                padding: 20px;
+            }
+            .input-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .input-group label {
+                flex-basis: auto;
+                width: 100%;
+            }
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px 15px;
+            }
+            .result-item strong {
+                flex-basis: auto;
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            .ip-version-selection label {
+                display: block; /* Radiobuttons untereinander */
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo-link">
+                <img src="logo.png" alt="Nolden.tech Logo" class="site-logo">
+            </a>
+            <div class="site-title">
+                <h1>Nolden.tech</h1>
+                <p>Deine Ressource für Fachinformatik und IT-Ausbildung</p>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <a href="index.html">Startseite</a>
+        <a href="projekte.html">Meine Projekte</a>
+        <a href="subnet_calculator.html">Subnetting Rechner</a>
+        <a href="quiz.html">IT-Wissen Test</a>
+        <a href="kontakt.html">Kontakt</a>
+    </nav>
+
+    <div class="container">
+        <section class="main-content">
+            <h2>IP-Subnetting-Rechner</h2>
+            <p>Ein praktisches Tool zur Berechnung von Netzwerkparametern für IPv4 und IPv6, basierend auf einer IP-Adresse und Subnetzmaske oder CIDR. Ideal für Fachinformatiker und alle, die sich mit Netzwerkplanung und -konfiguration beschäftigen.</p>
+
+            <div class="calculator-container">
+                <div class="ip-version-selection">
+                    <input type="radio" id="ipv4Radio" name="ipVersion" value="ipv4" checked onchange="updatePlaceholders()">
+                    <label for="ipv4Radio">IPv4</label>
+                    <input type="radio" id="ipv6Radio" name="ipVersion" value="ipv6" onchange="updatePlaceholders()">
+                    <label for="ipv6Radio">IPv6</label>
+                </div>
+
+                <div class="input-group">
+                    <label for="ipAddress">IP-Adresse:</label>
+                    <input type="text" id="ipAddress" placeholder="z.B. 192.168.1.100">
+                </div>
+                <div class="input-group">
+                    <label for="subnetMask">Subnetzmaske oder CIDR:</label>
+                    <input type="text" id="subnetMask" placeholder="z.B. 255.255.255.0 oder /24">
+                </div>
+                <button class="calc-button" onclick="calculateSubnet()">Berechnen</button>
+                <div id="errorMessage" class="error-message"></div>
+
+                <div class="results-section" id="ipv4Results" style="display:none;">
+                    <h3>IPv4 Ergebnisse</h3>
+                    <div class="result-item">
+                        <strong>Netz-ID:</strong>
+                        <span id="ipv4_networkId"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Broadcast-Adresse:</strong>
+                        <span id="ipv4_broadcastAddress"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Erste nutzbare IP:</strong>
+                        <span id="ipv4_firstHost"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Letzte nutzbare IP:</strong>
+                        <span id="ipv4_lastHost"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Anzahl nutzbarer Hosts:</strong>
+                        <span id="ipv4_numHosts"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Subnetzmaske (Dezimal):</strong>
+                        <span id="ipv4_decimalMask"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Subnetzmaske (Binär):</strong>
+                        <span id="ipv4_binaryMask"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>CIDR-Notation:</strong>
+                        <span id="ipv4_cidrNotation"></span>
+                    </div>
+                </div>
+
+                <div class="results-section" id="ipv6Results" style="display:none;">
+                    <h3>IPv6 Ergebnisse</h3>
+                    <div class="result-item">
+                        <strong>Netzwerk-Präfix:</strong>
+                        <span id="ipv6_networkPrefix"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Präfix-Länge:</strong>
+                        <span id="ipv6_prefixLength"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Erste Adresse im Bereich:</strong>
+                        <span id="ipv6_fullRangeStart"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Letzte Adresse im Bereich:</strong>
+                        <span id="ipv6_fullRangeEnd"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Anzahl Adressen im Bereich:</strong>
+                        <span id="ipv6_numAddresses"></span>
+                    </div>
+                     <div class="result-item">
+                        <strong>Standard-Subnetzgröße:</strong>
+                        <span id="ipv6_standardSubnet">/64</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2025 Nolden.tech. Alle Rechte vorbehalten. | <a href="impressum.html">Impressum</a> | <a href="datenschutz.html">Datenschutzerklärung</a></p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', updatePlaceholders); // Set initial placeholders
+
+        function updatePlaceholders() {
+            const ipAddressInput = document.getElementById('ipAddress');
+            const subnetMaskInput = document.getElementById('subnetMask');
+            const ipv4Radio = document.getElementById('ipv4Radio');
+
+            if (ipv4Radio.checked) {
+                ipAddressInput.placeholder = "z.B. 192.168.1.100";
+                subnetMaskInput.placeholder = "z.B. 255.255.255.0 oder /24";
+            } else {
+                ipAddressInput.placeholder = "z.B. 2001:0db8::1";
+                subnetMaskInput.placeholder = "z.B. /64 oder 48";
+            }
+            // Clear results and error messages when switching
+            document.getElementById('errorMessage').textContent = '';
+            document.getElementById('ipv4Results').style.display = 'none';
+            document.getElementById('ipv6Results').style.display = 'none';
+        }
+
+        function calculateSubnet() {
+            const ipInput = document.getElementById('ipAddress').value.trim();
+            const maskInput = document.getElementById('subnetMask').value.trim();
+            const errorMessageDiv = document.getElementById('errorMessage');
+            const ipv4ResultsSection = document.getElementById('ipv4Results');
+            const ipv6ResultsSection = document.getElementById('ipv6Results');
+            const ipv4Radio = document.getElementById('ipv4Radio');
+
+            errorMessageDiv.textContent = '';
+            ipv4ResultsSection.style.display = 'none';
+            ipv6ResultsSection.style.display = 'none';
+
+            try {
+                if (ipv4Radio.checked) {
+                    // IPv4 Calculation Logic (mostly same as before, with minor tweaks for consistency)
+                    let ipParts = ipInput.split('.').map(Number);
+                    if (ipParts.length !== 4 || ipParts.some(part => isNaN(part) || part < 0 || part > 255)) {
+                        throw new Error('Ungültige IPv4-Adresse.');
+                    }
+
+                    let cidr;
+                    let subnetMaskParts;
+
+                    if (maskInput.includes('/')) {
+                        cidr = parseInt(maskInput.split('/')[1]);
+                        if (isNaN(cidr) || cidr < 0 || cidr > 32) {
+                            throw new Error('Ungültige IPv4 CIDR-Notation (0-32).');
+                        }
+                        subnetMaskParts = cidrToMask(cidr).split('.').map(Number);
+                    } else {
+                        subnetMaskParts = maskInput.split('.').map(Number);
+                        if (subnetMaskParts.length !== 4 || subnetMaskParts.some(part => isNaN(part) || part < 0 || part > 255)) {
+                            throw new Error('Ungültige IPv4 Subnetzmaske.');
+                        }
+                        cidr = maskToCidr(maskInput);
+                        if (cidr === -1) {
+                             throw new Error('Ungültige IPv4 Subnetzmaske (nicht-kontinuierliche Bits).');
+                        }
+                    }
+
+                    const networkIdParts = ipParts.map((ip, i) => ip & subnetMaskParts[i]);
+                    const broadcastAddressParts = networkIdParts.map((net, i) => net | (~subnetMaskParts[i] & 255));
+
+                    const numHosts = Math.pow(2, (32 - cidr)) - 2;
+                    const firstHostParts = [...networkIdParts];
+                    const lastHostParts = [...broadcastAddressParts];
+
+                    if (cidr < 31) {
+                        firstHostParts[3]++;
+                        lastHostParts[3]--;
+                    }
+
+                    document.getElementById('ipv4_networkId').textContent = networkIdParts.join('.');
+                    document.getElementById('ipv4_broadcastAddress').textContent = broadcastAddressParts.join('.');
+                    document.getElementById('ipv4_firstHost').textContent = cidr < 31 ? firstHostParts.join('.') : (cidr === 31 ? networkIdParts.join('.') : 'Nicht anwendbar (Punkt-zu-Punkt / Einzelhost)');
+                    document.getElementById('ipv4_lastHost').textContent = cidr < 31 ? lastHostParts.join('.') : (cidr === 31 ? broadcastAddressParts.join('.') : 'Nicht anwendbar (Punkt-zu-Punkt / Einzelhost)');
+                    document.getElementById('ipv4_numHosts').textContent = cidr < 31 ? numHosts.toString() : (cidr === 31 ? '2 (beide nutzbar)' : '0 (IP selbst)');
+                    document.getElementById('ipv4_decimalMask').textContent = subnetMaskParts.join('.');
+                    document.getElementById('ipv4_binaryMask').textContent = subnetMaskParts.map(part => (part >>> 0).toString(2).padStart(8, '0')).join('.');
+                    document.getElementById('ipv4_cidrNotation').textContent = '/' + cidr;
+
+                    ipv4ResultsSection.style.display = 'block';
+
+                } else {
+                    // IPv6 Calculation Logic
+                    if (!ipInput.includes(':')) {
+                        throw new Error('Ungültige IPv6-Adresse. Sie muss Doppelpunkte enthalten.');
+                    }
+                    let cidr_v6 = parseInt(maskInput.replace('/', ''));
+                    if (isNaN(cidr_v6) || cidr_v6 < 0 || cidr_v6 > 128) {
+                        throw new Error('Ungültige IPv6 CIDR-Notation (0-128).');
+                    }
+
+                    const ipv6Result = calculateIPv6Subnet(ipInput, cidr_v6);
+
+                    document.getElementById('ipv6_networkPrefix').textContent = ipv6Result.networkId + '/' + ipv6Result.prefixLength;
+                    document.getElementById('ipv6_prefixLength').textContent = ipv6Result.prefixLength;
+                    document.getElementById('ipv6_fullRangeStart').textContent = ipv6Result.fullRangeStart;
+                    document.getElementById('ipv6_fullRangeEnd').textContent = ipv6Result.fullRangeEnd;
+                    document.getElementById('ipv6_numAddresses').textContent = ipv6Result.numHosts;
+
+                    ipv6ResultsSection.style.display = 'block';
+                }
+
+            } catch (e) {
+                errorMessageDiv.textContent = 'Fehler: ' + e.message;
+            }
+        }
+
+        // --- IPv4 Helper Functions (from previous code) ---
+        function cidrToMask(cidr) {
+            let mask = '';
+            for (let i = 0; i < 4; i++) {
+                let octet = 0;
+                for (let j = 0; j < 8; j++) {
+                    if (cidr > 0) {
+                        octet += Math.pow(2, (7 - j));
+                        cidr--;
+                    }
+                }
+                mask += octet + (i < 3 ? '.' : '');
+            }
+            return mask;
+        }
+
+        function maskToCidr(mask) {
+            const parts = mask.split('.');
+            let binaryMask = '';
+            for (let i = 0; i < 4; i++) {
+                binaryMask += (parseInt(parts[i]) >>> 0).toString(2).padStart(8, '0');
+            }
+            const match = binaryMask.match(/^1+0*$/);
+            if (!match) {
+                return -1; // Not a valid subnet mask (non-contiguous 1s)
+            }
+            return binaryMask.indexOf('0');
+        }
+
+        // --- IPv6 Helper Functions (NEW) ---
+        // Function to expand shortened IPv6 (e.g., ::1, 2001:db8::/64) to full 32 hex chars
+        function expandIPv6(ip) {
+            let parts = ip.split('::');
+            let firstPart = parts[0];
+            let lastPart = parts.length > 1 ? parts[1] : '';
+
+            let expandedFirst = firstPart.split(':');
+            let expandedLast = lastPart.split(':');
+
+            // Calculate missing chunks
+            let missingChunks = 8 - (expandedFirst.length + expandedLast.length);
+            let middle = '';
+            if (missingChunks > 0) {
+                middle = Array(missingChunks).fill('0000').join(':');
+            }
+
+            let fullIPv6 = expandedFirst.join(':');
+            if (missingChunks > 0) {
+                fullIPv6 += ':' + middle;
+            }
+            if (lastPart) {
+                if (fullIPv6) fullIPv6 += ':'; // Add colon if first part exists
+                fullIPv6 += expandedLast.join(':');
+            }
+
+            // Pad each chunk to 4 hex digits
+            return fullIPv6.split(':').map(chunk => chunk.padStart(4, '0')).join(':');
+        }
+
+        // Convert IPv6 string to BigInt
+        function ipv6ToBigInt(ipv6) {
+            const expanded = expandIPv6(ipv6);
+            const hex = expanded.replace(/:/g, '');
+            return BigInt('0x' + hex);
+        }
+
+        // Convert BigInt back to a "shortened" IPv6 string for display
+        function bigIntToIPv6(bigInt) {
+            let hex = bigInt.toString(16).padStart(32, '0'); // 128 bits = 32 hex chars
+            let ipv6 = '';
+            for (let i = 0; i < hex.length; i += 4) {
+                ipv6 += hex.substring(i, i + 4) + ':';
+            }
+            ipv6 = ipv6.slice(0, -1); // Remove trailing ':'
+
+            // Shorten the IPv6 address for display
+            let parts = ipv6.split(':');
+            let longestZeroSequence = { start: -1, length: 0 };
+            let currentZeroSequence = { start: -1, length: 0 };
+
+            for (let i = 0; i < parts.length; i++) {
+                if (parts[i] === '0000') {
+                    if (currentZeroSequence.start === -1) {
+                        currentZeroSequence.start = i;
+                    }
+                    currentZeroSequence.length++;
+                } else {
+                    if (currentZeroSequence.length > longestZeroSequence.length) {
+                        longestZeroSequence = { ...currentZeroSequence };
+                    }
+                    currentZeroSequence = { start: -1, length: 0 };
+                }
+            }
+            // Check one last time after loop
+            if (currentZeroSequence.length > longestZeroSequence.length) {
+                longestZeroSequence = { ...currentZeroSequence };
+            }
+
+            // Only shorten if sequence is at least 2 chunks
+            if (longestZeroSequence.length >= 2) {
+                const newParts = [];
+                for (let i = 0; i < parts.length; i++) {
+                    if (i === longestZeroSequence.start) {
+                        newParts.push('::');
+                    } else if (i > longestZeroSequence.start && i < longestZeroSequence.start + longestZeroSequence.length) {
+                        // Skip these parts
+                    } else {
+                        newParts.push(parts[i].replace(/^0+/, '') || '0'); // Remove leading zeros, keep '0' for '0000'
+                    }
+                }
+                ipv6 = newParts.join(':');
+            } else {
+                ipv6 = parts.map(chunk => chunk.replace(/^0+/, '') || '0').join(':');
+            }
+
+            return ipv6.replace(':::', '::'); // Fix for cases like 0:0::0:0 -> ::
+        }
+
+        // IPv6 Calculation
+        function calculateIPv6Subnet(ip, cidr) {
+            const ipBigInt = ipv6ToBigInt(ip);
+            const networkMaskBigInt = (BigInt(2)**BigInt(128) - BigInt(1)) << BigInt(128 - cidr);
+
+            const networkIdBigInt = ipBigInt & networkMaskBigInt;
+
+            const totalAddressesInSubnet = BigInt(2)**BigInt(128 - cidr);
+
+            const firstAddressBigInt = networkIdBigInt; // In IPv6, the network address itself is usable
+            const lastAddressBigInt = networkIdBigInt + totalAddressesInSubnet - BigInt(1);
+
+            return {
+                networkId: bigIntToIPv6(networkIdBigInt),
+                prefixLength: cidr,
+                fullRangeStart: bigIntToIPv6(firstAddressBigInt),
+                fullRangeEnd: bigIntToIPv6(lastAddressBigInt),
+                numHosts: totalAddressesInSubnet.toString() // String representation of BigInt
+            };
+        }
+    </script>
+</body>
+</html>
